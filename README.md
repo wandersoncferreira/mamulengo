@@ -1,7 +1,10 @@
 # mamulengo
 
+<img src="https://github.com/wandersoncferreira/mamulengo/blob/master/doc/mamulengo_fuzue.jpg" width=260 align="right"/>
+
 A lightweight database based on `datascript` and a pluggable
 storage for data durability.
+
 
 
 Bleedinng-edge PR.. Still wondering about APIs and code organization..

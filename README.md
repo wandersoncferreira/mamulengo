@@ -1,5 +1,7 @@
 # mamulengo
 
+<img src="https://github.com/wandersoncferreira/mamulengo/blob/master/doc/mamulengo_fuzue.jpg" width=260 align="right"/>
+
 A lightweight database based on `datascript` and a pluggable
 storage for data durability. In fact, `mamulengo` has
 probably poor performance when compared to other solutions
@@ -15,6 +17,7 @@ immutable database: i)durability and ii) time-travel feature
 as in Datomic.
 
 
+
 Bleedinng-edge PR.. Still wondering about APIs and code organization..
 
 ## Usage
@@ -25,7 +28,7 @@ FIXME
 ## Ideas
 
 The idea came from **Rodolfo Ferreira** about rethinking some
-ideas about database and that not all applications need an
+concepts on databases and reaching the conclusion that not all applications need an
 insane amount of write/reads per second. Sometimes we only
 need a SQLite to do our work and go home happily.
 

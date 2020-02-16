@@ -17,7 +17,7 @@ FIXME
 ## Ideas
 
 The idea came from **Rodolfo Ferreira** about rethinking some
-ideas about database and that not all applications need an
+concepts on databases and reaching the conclusion that not all applications need an
 insane amount of write/reads per second. Sometimes we only
 need a SQLite to do our work and go home happily.
 

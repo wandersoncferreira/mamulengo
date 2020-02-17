@@ -1,4 +1,4 @@
-# mamulengo
+# mamulengo [![Clojars Project](https://img.shields.io/clojars/v/mamulengo.svg)](https://clojars.org/mamulengo)
 
 <img src="https://github.com/wandersoncferreira/mamulengo/blob/master/doc/mamulengo_fuzue.jpg" width=260 align="right"/>
 
@@ -21,8 +21,20 @@ Mamulengo supports [PostgreSQL](https://www.postgresql.org/)
 and [H2](https://www.h2database.com/html/main.html) database
 already!
 
+## Installation
 
 *Bleedinng-edge project.. Still wondering about APIs and code organization..*
+
+Leinigen/Boot
+
+```clj
+[mamulengo "0.1.2"]
+```
+
+Clojure CLI/deps.edn
+```clj
+mamulengo {:mvn/version "0.1.1"}
+```
 
 
 ## Usage

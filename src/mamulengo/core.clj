@@ -2,7 +2,8 @@
   (:require [mount.core :as mount]
             [mamulengo.database :as database]
             [mamulengo.durability :as durability]
-            [mamulengo.config :as config]))
+            [mamulengo.config :as config])
+  (:gen-class))
 
 (defn connect! [config]
   (-> (mount.core/only #{#'config/mamulengo-cfg

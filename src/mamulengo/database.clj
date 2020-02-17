@@ -2,7 +2,8 @@
   (:require [mamulengo.durability :as du]
             [mount.core :refer [defstate]]
             [datascript.core :as ds]
-            [mamulengo.config :as config]))
+            [mamulengo.config :as config]
+            [mount.core :as mount]))
 
 (declare listen-tx!)
 
@@ -12,9 +13,6 @@
   (let [facts (du/retrieve-all-facts! config/mamulengo-cfg)
         schema (du/get-system-schema! config/mamulengo-cfg)]
     (ds/conn-from-datoms facts schema)))
-
-; (du/retrieve-all-facts! config/mamulengo-cfg)
-; (du/get-system-schema! config/mamulengo-cfg)
 
 (defn- start-datascript []
   (let [conn (recover-datascript)
@@ -32,16 +30,17 @@
   :stop (stop-datascript ds-state))
 
 (defn- listen-tx!
-  [{:keys [db-before db-after tx-data tempids tx-metada]}]
-  (let [{:keys [durable-conf]} config/mamulengo-cfg
-        stored (du/store! {:durable-layer :h2
-                           :durable-conf durable-conf
-                           :tempids (:db/current-tx tempids)
-                           :tx-data tx-data
-                           :tx-meta tx-metada})]
-    (if stored
-      (reset! (:sync ds-state) db-after)
-      (reset! (:conn ds-state) db-before))))
+  [{:keys [db-before db-after tx-data tempids tx-metada] :as report}]
+  (when (not= db-after db-before)
+    (let [{:keys [durable-conf durable-layer]} config/mamulengo-cfg
+          stored (du/store! {:durable-layer durable-layer
+                             :durable-conf durable-conf
+                             :tempids (:db/current-tx tempids)
+                             :tx-data tx-data
+                             :tx-meta tx-metada})]
+      (if stored
+        (reset! (:sync ds-state) db-after)
+        (reset! (:conn ds-state) db-before)))))
 
 (defn transact-schema!
   [tx]

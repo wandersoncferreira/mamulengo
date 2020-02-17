@@ -7,7 +7,8 @@
 (defn connect! [config]
   (-> (mount.core/only #{#'config/mamulengo-cfg
                          #'durability/durable-layer
-                         #'database/ds-state})
+                         #'database/ds-state
+                         })
       (mount.core/with-args config)
       (mount.core/start)))
 

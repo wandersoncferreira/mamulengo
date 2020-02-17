@@ -3,16 +3,13 @@
             [clojure.test :refer [deftest is testing]]))
 
 (def schema-planets
-  {:body/name {:db/cardinality :db.cardinality/one
-               :db/valueType :db.type/string}
-   :body/diameter {:db/cardinality :db.cardinality/one
-                   :db/valueType :db.type/long}})
+  {:body/name {:db/cardinality :db.cardinality/one}
+   :body/diameter {:db/cardinality :db.cardinality/one}})
 
 (deftest insert-into-database
   (testing "The database should insert all non-duplicated data."
     (let [cfg {:durable-layer :h2
-               :durable-conf {:dbtype "h2"
-                              :subprotocol "h2:mem"
+               :durable-conf {:dbtype "h2:mem"
                               :dbname "test_mamulengo"}}]
       (sut/connect! cfg)
       (sut/transact-schema! schema-planets)
@@ -34,4 +31,4 @@
                                    ["Earth"])
                        first
                        second)))
-      )))
+      (sut/disconnect!))))

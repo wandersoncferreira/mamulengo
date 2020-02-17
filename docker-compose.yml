@@ -1,0 +1,20 @@
+version: '3.6'
+
+networks:
+  mamulengo:
+    driver: bridge
+
+services:
+  db:
+    image: postgres:10.6
+    restart: always
+    networks:
+      - mamulengo
+    environment:
+      POSTGRES_PASSWORD: test
+      POSTGRES_USER: test
+
+    ports:
+      - "54329:5432"
+    expose:
+      - "5432"

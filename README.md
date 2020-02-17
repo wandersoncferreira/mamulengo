@@ -16,13 +16,54 @@ improve datascript and enable it to be a full-fledged
 immutable database: i)durability and ii) time-travel feature
 as in Datomic.
 
+Mamulengo supports PostgreSQL and H2 database already!
 
 
-Bleedinng-edge PR.. Still wondering about APIs and code organization..
+*Bleedinng-edge project.. Still wondering about APIs and code organization..*
+
 
 ## Usage
 
-FIXME
+```clj
+(require '[mamulengo.core :as m])
+
+(def cfg {:durable-storage :postgresql
+          :durable-conf {:dbtype "postgresql"
+                         :dbname "mamulengo"
+                         :password "test"
+                         :user "test"}})
+
+(m/connect! cfg)
+
+
+;;; let's define a schema
+(def schema-planets
+  {:body/name {:db/cardinality :db.cardinality/one
+               :db/unique :db.unique/identity}
+   :body/diameter {:db/cardinality :db.cardinality/one
+                   :db/unique :db.unique/identity}})
+
+(m/transact-schema! schema-planets)
+
+;;; now you are ready to save your data!!
+(m/transact! [{:db/id -1
+                     :body/name "Earth"
+                     :body/diameter 12740}
+                    {:db/id -2
+                     :body/name "Pluto"
+                     :body/diameter 80}
+                    {:db/id -3
+                     :body/name "Venus"
+                     :body/diameter 12100}])
+
+;;; you should also retrieve it back!
+(m/query! '[:find (pull ?e [*])
+            :in $ ?n
+            :where
+            [?e :body/name ?n]]
+            ["Pluto"])
+
+```
 
 
 ## Ideas

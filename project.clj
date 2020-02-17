@@ -9,5 +9,6 @@
                  [potemkin "0.4.5"]
                  [mount "0.1.16"]
                  [seancorfield/next.jdbc "1.0.13"]
-                 [com.taoensso/nippy "2.14.0"]]
+                 [com.taoensso/nippy "2.14.0"]
+                 [org.clojure/test.check "0.10.0"]]
   :repl-options {:init-ns mamulengo.core})

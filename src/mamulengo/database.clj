@@ -13,6 +13,9 @@
         schema (du/get-system-schema! config/mamulengo-cfg)]
     (ds/conn-from-datoms facts schema)))
 
+; (du/retrieve-all-facts! config/mamulengo-cfg)
+; (du/get-system-schema! config/mamulengo-cfg)
+
 (defn- start-datascript []
   (let [conn (recover-datascript)
         sync (atom @conn)]
@@ -40,10 +43,16 @@
       (reset! (:sync ds-state) db-after)
       (reset! (:conn ds-state) db-before))))
 
+(defn transact-schema!
+  [tx]
+  (let [config-tx (assoc config/mamulengo-cfg :durable-schema tx)]
+    (du/setup-clients-schema! config-tx)))
+
 (defn transact!
   ([tx] (transact! tx nil))
   ([tx metadata]
-   (ds/transact! (:conn ds-state) tx metadata)))
+   (let [tx-seq (if (map? tx) (list tx) tx)]
+     (ds/transact! (:conn ds-state) tx-seq metadata))))
 
 (defn query!
   [query inputs]

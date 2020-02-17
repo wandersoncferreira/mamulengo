@@ -16,30 +16,4 @@
 
 (def query! database/query!)
 (def transact! database/transact!)
-
-
-
-(comment
-
-  (def cfg {:durable-layer :h2
-            :durable-conf {:dbtype "h2"
-                           :dbname "mamulengo"}
-            :durable-schema {:empl/dept {:db/cardinality :db.cardinality/many}
-                             :empl/salary {:db/cardinality :db.cardinality/many}}})
-
-  (connect! cfg)
-  (disconnect!)
-
-  ;; testing my implementation
-  (def tx [{:empl/salary 2032
-            :empl/dept "TEH"}])
-
-  (transact! tx)
-
-  (query! '[:find ?e ?d ?s
-            :in $
-            :where
-            [?e :empl/dept ?d]
-            [?e :empl/salary ?s]]
-          nil)
-  )
+(def transact-schema! database/transact-schema!)

@@ -71,7 +71,7 @@ nippy binary
 (defmethod retrieve-all-facts! :h2
   [{:keys [durable-conf]}]
   (let [facts (jdbc/execute! durable-conf ["select * from mamulengo"])
-        xf (comp (map :datoms)
+        xf (comp (map :MAMULENGO/DATOMS)
                  (mapcat #(edn/read-string {:readers ds/data-readers} %)))]
     (into [] xf facts)))
 

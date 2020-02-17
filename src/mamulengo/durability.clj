@@ -15,7 +15,6 @@
 
 (defn- start-durable-layer []
   (create-system-tables! config/mamulengo-cfg)
-  (setup-clients-schema! config/mamulengo-cfg)
   (:durable-conf config/mamulengo-cfg))
 
 (defstate durable-layer

@@ -81,8 +81,7 @@ voice to the puppets.
 
 `Mamulengo` here has the same objectives, we want you to be
 amazed by `datalog` query engines and all the bells and
-whistle of immutable databases, but behind the scenes we
-have so hard work to make this possible with no overhead
+whistle of immutable databases, but behind the scenes we manage the hard work to make this possible with no overhead
 introduced to the audience.
 
 

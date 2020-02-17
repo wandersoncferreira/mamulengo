@@ -1,57 +1,55 @@
-(ns mamulengo.durable.h2-impl
-  (:require [clojure.edn :as edn]
-            [datascript.core :as ds]
-            [mamulengo.durable.interface :refer [create-system-tables!
+(ns mamulengo.durable.pg-impl
+  (:require [mamulengo.durable.interface :refer [create-system-tables!
                                                  get-system-schema!
                                                  retrieve-all-facts!
                                                  setup-clients-schema!
                                                  store!]]
             [next.jdbc :as jdbc]
+            [taoensso.nippy :as nippy]
             [next.jdbc.sql :as sql]
-            [taoensso.nippy :as nippy]))
+            [clojure.edn :as edn]
+            [datascript.core :as ds]))
 
 (def ^:private sql-create-txs-table
   ["create table if not exists TX (
-id integer AUTO_INCREMENT PRIMARY KEY,
+id serial PRIMARY KEY,
 tx integer NOT NULL UNIQUE,
 instant timestamp DEFAULT NOW() NOT NULL,
-meta varchar(2048),
-)"])
+meta varchar(2048))"])
 
 (def ^:private sql-create-fact-table
   ["create table if not exists MAMULENGO (
-id integer AUTO_INCREMENT PRIMARY KEY,
+id serial PRIMARY KEY,
 datoms varchar(4096),
 tx integer NOT NULL UNIQUE,
-FOREIGN KEY (tx) REFERENCES tx(id)
-)"])
+FOREIGN KEY (tx) REFERENCES tx(id))"])
 
 (def ^:private sql-create-schemas-table
   ["create table if not exists DBSCHEMA (
-id integer PRIMARY KEY AUTO_INCREMENT,
+id serial PRIMARY KEY,
 instant timestamp DEFAULT NOW() NOT NULL,
-nippy binary
-)"])
+nippy bytea)"])
 
 (def ^:private sql-get-last-schema
-  ["select top 1 nippy from dbschema order by instant desc"])
+  ["select nippy from dbschema order by instant desc limit 1"])
 
-(defmethod create-system-tables! :h2
+
+(defmethod create-system-tables! :postgresql
   [{:keys [durable-conf]}]
   (jdbc/with-transaction [tx (jdbc/get-datasource durable-conf)]
     (jdbc/execute! tx sql-create-txs-table)
     (jdbc/execute! tx sql-create-fact-table)
     (jdbc/execute! tx sql-create-schemas-table)))
 
-(defmethod get-system-schema! :h2
+(defmethod get-system-schema! :postgresql
   [{:keys [durable-conf]}]
   (some-> durable-conf
           (jdbc/execute! sql-get-last-schema)
           first
-          :DBSCHEMA/NIPPY
+          :dbschema/nippy
           nippy/thaw))
 
-(defmethod setup-clients-schema! :h2
+(defmethod setup-clients-schema! :postgresql
   [{:keys [durable-conf durable-schema] :as conf}]
   (jdbc/with-transaction [tx durable-conf]
     (let [last-schema (get-system-schema! conf)]
@@ -59,18 +57,18 @@ nippy binary
                  (not= durable-schema last-schema))
         (sql/insert! tx :dbschema {:nippy (nippy/freeze durable-schema)})))))
 
-(defmethod retrieve-all-facts! :h2
+(defmethod retrieve-all-facts! :postgresql
   [{:keys [durable-conf]}]
   (let [facts (jdbc/execute! durable-conf ["select * from mamulengo"])
-        xf (comp (map :MAMULENGO/DATOMS)
+        xf (comp (map :mamulengo/datoms)
                  (mapcat #(edn/read-string {:readers ds/data-readers} %)))]
     (into [] xf facts)))
 
-(defmethod store! :h2
+(defmethod store! :postgresql
   [{:keys [durable-conf tempids tx-meta tx-data]}]
   (jdbc/with-transaction [tx (jdbc/get-datasource durable-conf)]
     (let [tx-result (sql/insert! tx :tx {:tx tempids
                                          :meta (if tx-meta (pr-str tx-meta) nil)})
-          tx-id (:TX/ID tx-result)]
+          tx-id (:tx/id tx-result)]
       (sql/insert! tx :mamulengo {:datoms (pr-str tx-data) :tx tx-id})
       tx-id)))

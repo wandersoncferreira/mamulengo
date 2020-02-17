@@ -2,6 +2,7 @@
   (:require [potemkin :refer [import-vars]]
             [mount.core :refer [defstate]]
             [mamulengo.durable.h2-impl :refer :all]
+            [mamulengo.durable.pg-impl :refer :all]
             [mamulengo.config :as config]))
 
 (import-vars

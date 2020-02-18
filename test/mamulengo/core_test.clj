@@ -27,7 +27,8 @@
                                      :where
                                      [?e :body/name ?n]
                                      [?e :body/diameter ?d]]
-                                   ["Earth"])
+                                   "Earth")
                        first
-                       second)))
+                       second
+                       )))
       (sut/disconnect!))))

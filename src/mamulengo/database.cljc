@@ -70,8 +70,10 @@
 
 (defn query!
   [query & args]
-  (let [connection (if (ds/conn? (first args)) @(first args) @(:sync @ds-state))]
-    (apply ds/q query (cons connection (rest args)))))
+  (println "ARGS: args")
+  (let [connection (if (ds/conn? (first args)) @(first args) @(:sync @ds-state))
+        inputs (if (ds/conn? (first args)) (rest args) args)]
+    (apply ds/q query (cons connection inputs))))
 
 (defn get-database!
   [instant]

@@ -34,7 +34,7 @@
     (if (or valid? (empty? tb))
       tb
       (throw (ex-info "Your durable storage is corrupted"
-                      (s/explain-data (get specs table-name)))))))
+                      (s/explain-data (get specs table-name) tb))))))
 
 (defmethod create-system-tables! :local-storage
   [_]
@@ -93,7 +93,9 @@
                                                   :tx next-id-tx}))
     next-id-tx))
 
-(defn- compare-dates [inst1 inst2]
+(defn- compare-dates
+  "Verify if the instant1 happens after or at the same time as instant2"
+  [inst1 inst2]
   (let [date1 (tc/from-date inst1)
         date2 (tc/from-date inst2)]
     (or (t/after? date1 date2)

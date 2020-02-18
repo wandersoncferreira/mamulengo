@@ -1,4 +1,4 @@
-(ns mamulengo.durable.interface)
+(ns mamulengo.durability)
 
 (defmulti create-system-tables! :durable-layer)
 

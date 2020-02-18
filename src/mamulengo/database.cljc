@@ -1,9 +1,16 @@
 (ns mamulengo.database
-  (:require [mamulengo.durability :as du]
-            [mount.core :refer [defstate]]
-            [datascript.core :as ds]
-            [mamulengo.config :as config]
-            [mount.core :as mount]))
+  #?@(:clj
+      [(:require [mamulengo.durability :as du]
+                 [mamulengo.durable.h2-impl :refer :all]
+                 [mamulengo.durable.pg-impl :refer :all]
+                 [mount.core :refer [defstate]]
+                 [datascript.core :as ds]
+                 [mamulengo.config :as config])]
+      :cljs
+      [(:require-macros [mount.core :refer [defstate]])
+       (:require [mamulengo.config :as config]
+                 [datascript.core :as ds]
+                 [mamulengo.durability :as du])]))
 
 (declare listen-tx!)
 
@@ -29,8 +36,14 @@
   :start (start-datascript)
   :stop (stop-datascript ds-state))
 
+(defstate durable-layer
+  :start (do
+           (du/create-system-tables! config/mamulengo-cfg)
+           (:durable-conf config/mamulengo-cfg))
+  :stop identity)
+
 (defn- listen-tx!
-  [{:keys [db-before db-after tx-data tempids tx-metada] :as report}]
+  [{:keys [db-before db-after tx-data tempids tx-metada]}]
   (when (not= db-after db-before)
     (let [{:keys [durable-conf durable-layer]} config/mamulengo-cfg
           stored (du/store! {:durable-layer durable-layer

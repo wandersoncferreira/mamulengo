@@ -19,7 +19,7 @@ i)durability and ii) time-travel feature as in Datomic.
 
 Mamulengo supports [PostgreSQL](https://www.postgresql.org/)
 and [H2](https://www.h2database.com/html/main.html) for
-Clojure and ... for ClojureScript.
+Clojure and [Local Storage](https://funcool.github.io/hodgepodge/) for ClojureScript.
 
 ## Installation
 

@@ -8,7 +8,7 @@
 
 (deftest insert-into-database
   (testing "The database should insert all non-duplicated data."
-    (let [cfg {:durable-layer :h2
+    (let [cfg {:durable-storage :h2
                :durable-conf {:dbtype "h2:mem"
                               :dbname "test_mamulengo"}}]
       (sut/connect! cfg)

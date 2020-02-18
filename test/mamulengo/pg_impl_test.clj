@@ -35,7 +35,6 @@
                   :body/name) (ffirst (m/query! '[:find (pull ?e [*])
                                                   :in $
                                                   :where
-                                                  [?e :body/name "Pluto"]]
-                                                nil)))
+                                                  [?e :body/name "Pluto"]])))
            [80 "Pluto"]))
       (m/disconnect!))))

@@ -6,11 +6,13 @@
                                                retrieve-all-facts!
                                                get-database!
                                                store!]]
+                 [mamulengo.specs.system-table :as st]
                  [hodgepodge.core :refer [local-storage]]
                  [cljs-time.core :as t]
                  [cljs-time.coerce :as tc]
                  [clojure.edn :as edn]
-                 [datascript.core :as ds])]))
+                 [datascript.core :as ds]
+                 [clojure.spec.alpha :as s])]))
 
 (defn get-last-id [table]
   (letfn [(last-id [table]
@@ -19,20 +21,35 @@
       0
       (last-id table))))
 
+(defn read-storage
+  "Read the local storage and spec the content to verify if anything anomalous is in there.
+
+  :table-name    Name of the system table to be read from local storage."
+  [table-name]
+  (let [specs {:table-tx ::st/table-tx
+               :table-schema ::st/table-schema
+               :table-mamulengo ::st/table-mamulengo}
+        tb (get local-storage table-name)
+        valid? (s/valid? (get specs table-name) tb)]
+    (if (or valid? (empty? tb))
+      tb
+      (throw (ex-info "Your durable storage is corrupted"
+                      (s/explain-data (get specs table-name) tb))))))
+
 (defmethod create-system-tables! :local-storage
   [_]
-  (when-not (get local-storage :table-tx)
+  (when-not (read-storage :table-tx)
     (assoc! local-storage :table-tx []))
 
-  (when-not (get local-storage :table-schema)
+  (when-not (read-storage :table-schema)
     (assoc! local-storage :table-schema []))
 
-  (when-not (get local-storage :table-mamulengo)
+  (when-not (read-storage :table-mamulengo)
     (assoc! local-storage :table-mamulengo [])))
 
 (defmethod get-system-schema! :local-storage
   [_]
-  (let [table-schema (get local-storage :table-schema)
+  (let [table-schema (read-storage :table-schema)
         last-id (get-last-id table-schema)
         last-schema (:nippy (first (filter #(= last-id (:id %)) table-schema)))]
     (if-not (empty? last-schema)
@@ -41,7 +58,7 @@
 
 (defmethod setup-clients-schema! :local-storage
   [{:keys [durable-schema] :as conf}]
-  (let [table-schema (get local-storage :table-schema)
+  (let [table-schema (read-storage :table-schema)
         last-id (get-last-id table-schema)
         last-schema (get-system-schema! conf)]
     (when (and durable-schema
@@ -58,10 +75,10 @@
 
 (defmethod store! :local-storage
   [{:keys [tempids tx-meta tx-data]}]
-  (let [table-tx (get local-storage :table-tx)
+  (let [table-tx (read-storage :table-tx)
         last-id-tx (get-last-id table-tx)
         next-id-tx (inc last-id-tx)
-        table-mamulengo (get local-storage :table-mamulengo)
+        table-mamulengo (read-storage :table-mamulengo)
         last-id-mamulengo (get-last-id table-mamulengo)]
     
     (assoc! local-storage :table-tx (conj table-tx
@@ -76,7 +93,9 @@
                                                   :tx next-id-tx}))
     next-id-tx))
 
-(defn- compare-dates [inst1 inst2]
+(defn- compare-dates
+  "Verify if the instant1 happens after or at the same time as instant2"
+  [inst1 inst2]
   (let [date1 (tc/from-date inst1)
         date2 (tc/from-date inst2)]
     (or (t/after? date1 date2)
@@ -84,9 +103,9 @@
 
 (defmethod get-database! :local-storage
   [{:keys [instant]}]
-  (let [table-tx (get local-storage :table-tx)
+  (let [table-tx (read-storage :table-tx)
         desired-tx (last (filter #(= true (compare-dates instant (:instant %))) table-tx))
-        table-mamulengo (get local-storage :table-mamulengo)]
+        table-mamulengo (read-storage :table-mamulengo)]
     (->> table-mamulengo
          (filter #(= (:id desired-tx) (:tx %)))
          first

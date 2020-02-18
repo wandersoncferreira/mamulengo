@@ -10,7 +10,7 @@
 
 (deftest insert-planets-in-pg
   (testing "The implementation of postgresql should work too"
-    (let [cfg {:durable-layer :postgresql
+    (let [cfg {:durable-storage :postgresql
                :durable-conf {:dbtype "postgresql"
                               :dbname "mamulengo"
                               :password "test"

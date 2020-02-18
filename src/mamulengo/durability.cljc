@@ -1,11 +1,11 @@
 (ns mamulengo.durability)
 
-(defmulti create-system-tables! :durable-layer)
+(defmulti create-system-tables! :durable-storage)
 
-(defmulti setup-clients-schema! :durable-layer)
+(defmulti setup-clients-schema! :durable-storage)
 
-(defmulti retrieve-all-facts! :durable-layer)
+(defmulti retrieve-all-facts! :durable-storage)
 
-(defmulti get-system-schema! :durable-layer)
+(defmulti get-system-schema! :durable-storage)
 
-(defmulti store! :durable-layer)
+(defmulti store! :durable-storage)

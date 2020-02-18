@@ -13,7 +13,7 @@ services:
     environment:
       POSTGRES_PASSWORD: test
       POSTGRES_USER: test
-      POSTGRES_DATABASE: mamulengo
+      POSTGRES_DB: mamulengo
 
     ports:
       - "54329:5432"

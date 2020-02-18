@@ -1,4 +1,4 @@
-# mamulengo [![Clojars Project](https://img.shields.io/clojars/v/mamulengo.svg)](https://clojars.org/mamulengo)
+# mamulengo [![Clojars Project](https://img.shields.io/clojars/v/mamulengo.svg)](https://clojars.org/mamulengo) [![Build Status](https://travis-ci.org/wandersoncferreira/mamulengo.svg?branch=master)](https://travis-ci.org/wandersoncferreira/mamulengo)
 
 <img src="https://github.com/wandersoncferreira/mamulengo/blob/master/doc/mamulengo_fuzue.jpg" width=260 align="right"/>
 

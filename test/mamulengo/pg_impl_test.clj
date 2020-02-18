@@ -16,8 +16,7 @@
                               :password "test"
                               :port 54329
                               :user "test"}}]
-      (m/connect! cfg)
-      (m/transact-schema! schema-planets)
+      (m/connect! cfg schema-planets)
       (m/transact! [{:db/id -1
                      :body/name "Earth"
                      :body/diameter 12740}

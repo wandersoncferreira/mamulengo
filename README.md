@@ -48,9 +48,6 @@ mamulengo {:mvn/version "0.1.5"}
                          :password "test"
                          :user "test"}})
 
-(m/connect! cfg)
-
-
 ;;; let's define a schema
 (def schema-planets
   {:body/name {:db/cardinality :db.cardinality/one
@@ -58,7 +55,8 @@ mamulengo {:mvn/version "0.1.5"}
    :body/diameter {:db/cardinality :db.cardinality/one
                    :db/unique :db.unique/identity}})
 
-(m/transact-schema! schema-planets)
+(m/connect! cfg schema-planets)
+
 
 ;;; now you are ready to save your data!!
 (m/transact! [{:db/id -1

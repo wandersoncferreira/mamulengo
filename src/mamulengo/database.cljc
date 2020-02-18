@@ -69,5 +69,11 @@
      (ds/transact! (:conn @ds-state) tx-seq metadata))))
 
 (defn query!
-  [query inputs]
-  (apply ds/q query (cons @(:sync @ds-state) inputs)))
+  [query & args]
+  (let [connection (if (ds/conn? (first args)) @(first args) @(:sync @ds-state))]
+    (apply ds/q query (cons connection (rest args)))))
+
+(defn get-database!
+  [instant]
+  (let [datoms (du/get-database! (assoc @config/mamulengo-cfg :instant instant))]
+    (ds/conn-from-datoms datoms)))

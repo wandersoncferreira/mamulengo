@@ -19,5 +19,8 @@
 (defn disconnect! []
   (mount/stop))
 
-(def query! database/query!)
 (def transact! database/transact!)
+
+(def query! database/query!)
+
+(def get-database! database/get-database!)

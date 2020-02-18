@@ -9,3 +9,5 @@
 (defmulti get-system-schema! :durable-storage)
 
 (defmulti store! :durable-storage)
+
+(defmulti get-database! :durable-storage)

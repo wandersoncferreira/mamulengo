@@ -28,12 +28,12 @@ Clojure and [Local Storage](https://funcool.github.io/hodgepodge/) for ClojureSc
 Leinigen/Boot
 
 ```clj
-[mamulengo "0.1.5"]
+[mamulengo "0.1.6"]
 ```
 
 Clojure CLI/deps.edn
 ```clj
-mamulengo {:mvn/version "0.1.5"}
+mamulengo {:mvn/version "0.1.6"}
 ```
 
 
@@ -76,6 +76,33 @@ mamulengo {:mvn/version "0.1.5"}
             [?e :body/name ?n]]
             ["Pluto"])
 
+```
+
+
+### Time travel
+
+Right now only the `Local Storage` option has support for
+time-travel. The API behaves similarly with Datomic one, you
+can pass an old Database/Connection object to the query function.
+
+```clj
+
+(def ret (m/transact! {:body/name "Wow"}))  ;; => db-before... db-after..
+
+;;; more things happening...
+
+(m/query! '[:find ?name
+            :where [?e :body/name ?name]]
+            (:db-before ret))
+
+```
+
+This will query the `db-before` database. You can also use
+`m/get-database` to capture a specific version of the
+database based on timestamp.
+
+```clj
+(def old-db (m/get-database! #inst "2020-02-18T11:46:31.505-00:00"))
 ```
 
 

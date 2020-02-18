@@ -32,11 +32,9 @@
   (let [table-schema (get local-storage :table-schema)
         last-id (get-last-id table-schema)
         last-schema (:nippy (first (filter #(= last-id (:id %)) table-schema)))]
-    ;; TODO: verify what is happening when a schema is provided to datascript.
-    #_(if-not (empty? last-schema)
-        (edn/read-string last-schema)
-        {})
-    {}))
+    (if-not (empty? last-schema)
+      (edn/read-string last-schema)
+      {})))
 
 (defmethod setup-clients-schema! :local-storage
   [{:keys [durable-schema] :as conf}]

@@ -11,8 +11,7 @@
     (let [cfg {:durable-storage :h2
                :durable-conf {:dbtype "h2:mem"
                               :dbname "test_mamulengo"}}]
-      (sut/connect! cfg)
-      (sut/transact-schema! schema-planets)
+      (sut/connect! cfg schema-planets)
       (sut/transact! [{:db/id -1
                        :body/name "Earth"
                        :body/diameter 12740}

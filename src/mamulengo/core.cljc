@@ -8,14 +8,16 @@
                  [mamulengo.database :as database]
                  [mount.core :as mount])]))
 
-(defn connect! [config]
-  (mount/in-cljc-mode)
-  (-> (mount/with-args config)
-      (mount/start)))
+(defn connect!
+  ([config]
+   (connect! config {}))
+  ([config schema]
+   (mount/in-cljc-mode)
+   (-> (mount/with-args (assoc config :durable-schema schema))
+       (mount/start))))
 
 (defn disconnect! []
   (mount/stop))
 
 (def query! database/query!)
 (def transact! database/transact!)
-(def transact-schema! database/transact-schema!)

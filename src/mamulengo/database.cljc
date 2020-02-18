@@ -18,6 +18,7 @@
 
 (defn- setup-durability-layer [conf]
   (du/create-system-tables! conf)
+  (du/setup-clients-schema! conf)
   {:facts (du/retrieve-all-facts! conf)
    :schema (du/get-system-schema! conf)})
 
@@ -60,13 +61,6 @@
         (if stored
           (reset! (:sync @ds-state) db-after)
           (reset! (:conn @ds-state) db-before))))))
-
-;;; TODO: add schema when only datascript is present in the system
-(defn transact-schema!
-  [tx]
-  (let [config-tx (assoc @config/mamulengo-cfg :durable-schema tx)]
-    (when-not (= (:durable-layer @config/mamulengo-cfg) :off)
-      (du/setup-clients-schema! config-tx))))
 
 (defn transact!
   ([tx] (transact! tx nil))

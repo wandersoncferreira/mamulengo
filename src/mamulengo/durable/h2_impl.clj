@@ -1,11 +1,11 @@
 (ns mamulengo.durable.h2-impl
   (:require [clojure.edn :as edn]
             [datascript.core :as ds]
-            [mamulengo.durable.interface :refer [create-system-tables!
-                                                 get-system-schema!
-                                                 retrieve-all-facts!
-                                                 setup-clients-schema!
-                                                 store!]]
+            [mamulengo.durability :refer [create-system-tables!
+                                          get-system-schema!
+                                          retrieve-all-facts!
+                                          setup-clients-schema!
+                                          store!]]
             [next.jdbc :as jdbc]
             [next.jdbc.sql :as sql]
             [taoensso.nippy :as nippy]))

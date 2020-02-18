@@ -1,9 +1,9 @@
 (ns mamulengo.durable.pg-impl
-  (:require [mamulengo.durable.interface :refer [create-system-tables!
-                                                 get-system-schema!
-                                                 retrieve-all-facts!
-                                                 setup-clients-schema!
-                                                 store!]]
+  (:require [mamulengo.durability :refer [create-system-tables!
+                                          get-system-schema!
+                                          retrieve-all-facts!
+                                          setup-clients-schema!
+                                          store!]]
             [next.jdbc :as jdbc]
             [taoensso.nippy :as nippy]
             [next.jdbc.sql :as sql]

@@ -4,8 +4,11 @@
                                                get-system-schema!
                                                setup-clients-schema!
                                                retrieve-all-facts!
+                                               get-database!
                                                store!]]
                  [hodgepodge.core :refer [local-storage]]
+                 [cljs-time.core :as t]
+                 [cljs-time.coerce :as tc]
                  [clojure.edn :as edn]
                  [datascript.core :as ds])]))
 
@@ -72,3 +75,20 @@
                                                   :datoms (pr-str tx-data)
                                                   :tx next-id-tx}))
     next-id-tx))
+
+(defn- compare-dates [inst1 inst2]
+  (let [date1 (tc/from-date inst1)
+        date2 (tc/from-date inst2)]
+    (or (t/after? date1 date2)
+        (t/equal? date1 date2))))
+
+(defmethod get-database! :local-storage
+  [{:keys [instant]}]
+  (let [table-tx (get local-storage :table-tx)
+        desired-tx (last (filter #(= true (compare-dates instant (:instant %))) table-tx))
+        table-mamulengo (get local-storage :table-mamulengo)]
+    (->> table-mamulengo
+         (filter #(= (:id desired-tx) (:tx %)))
+         first
+         :datoms
+         (edn/read-string {:readers ds/data-readers}))))

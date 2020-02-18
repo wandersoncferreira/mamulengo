@@ -2,12 +2,11 @@
   (:require [mount.core :as mount]
             [clojure.tools.namespace.repl :as tn]
             [mamulengo.database :as database]
-            [mamulengo.config :as config]
-            [mamulengo.durability :as durable]))
+            [mamulengo.config :as config]))
 
 (defn start [config]
+  (mount/in-cljc-mode)
   (-> (mount.core/only #{#'config/mamulengo-cfg
-                         #'durable/durable-layer
                          #'database/ds-state
                          })
       (mount.core/with-args config)
@@ -20,8 +19,8 @@
   (stop)
   (tn/refresh))
 
-(defn go []
-  (start)
+(defn go [config]
+  (start config)
   :ready)
 
 (defn reset []

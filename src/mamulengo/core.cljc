@@ -1,24 +1,20 @@
 (ns mamulengo.core
   #?@(:clj
-      [(:require [mount.core :refer [only with-args start stop in-cljc-mode]]
+      [(:require [mamulengo.config]
                  [mamulengo.database :as database]
-                 [mamulengo.config :as config])]
+                 [mount.core :as mount])]
       :cljs
-      [(:require [mamulengo.config :as config]
-                 [mount.core :refer [only with-args start stop in-cljc-mode]]
-                 [mamulengo.database :as database])]))
+      [(:require [mamulengo.config]
+                 [mamulengo.database :as database]
+                 [mount.core :as mount])]))
 
 (defn connect! [config]
-  (in-cljc-mode)
-  (-> (only #{#'config/mamulengo-cfg
-              #'database/durable-layer
-              #'database/ds-state
-              })
-      (with-args config)
-      (start)))
+  (mount/in-cljc-mode)
+  (-> (mount/with-args config)
+      (mount/start)))
 
 (defn disconnect! []
-  (stop))
+  (mount/stop))
 
 (def query! database/query!)
 (def transact! database/transact!)

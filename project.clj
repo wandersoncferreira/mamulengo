@@ -1,4 +1,4 @@
-(defproject mamulengo "0.1.3"
+(defproject mamulengo "0.1.4"
   :description "Lightweight embedded database based on datascript for Clojure(Script)"
   :url "https://github.com/wandersoncferreira/mamulengo"
   :license {:name "EPL-2.0 OR GPL-2.0-or-later WITH Classpath-exception-2.0"

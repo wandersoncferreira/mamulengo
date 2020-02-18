@@ -15,7 +15,6 @@
                  [seancorfield/next.jdbc "1.0.13"]
                  [com.taoensso/nippy "2.14.0"]
                  [org.clojure/test.check "0.10.0"]]
-
   :profiles {:dev {:source-paths ["src" "dev"]
                    :plugins [[refactor-nrepl "2.4.0"]
                              [cider/cider-nrepl "0.23.0"]]}}

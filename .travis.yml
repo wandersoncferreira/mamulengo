@@ -1,0 +1,10 @@
+language: clojure
+
+services:
+  - docker
+
+before_script:
+  - docker-compose up -d
+
+script:
+  - lein test

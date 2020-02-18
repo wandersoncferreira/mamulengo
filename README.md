@@ -28,12 +28,12 @@ Clojure and ... for ClojureScript.
 Leinigen/Boot
 
 ```clj
-[mamulengo "0.1.2"]
+[mamulengo "0.1.5"]
 ```
 
 Clojure CLI/deps.edn
 ```clj
-mamulengo {:mvn/version "0.1.1"}
+mamulengo {:mvn/version "0.1.5"}
 ```
 
 

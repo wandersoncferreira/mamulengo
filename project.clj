@@ -1,4 +1,4 @@
-(defproject mamulengo "0.1.4"
+(defproject mamulengo "0.1.5"
   :description "Lightweight embedded database based on datascript for Clojure(Script)"
   :url "https://github.com/wandersoncferreira/mamulengo"
   :license {:name "EPL-2.0 OR GPL-2.0-or-later WITH Classpath-exception-2.0"
@@ -7,6 +7,7 @@
                  [org.clojure/tools.namespace "0.3.1"]
                  [com.h2database/h2 "1.4.197"]
                  [org.postgresql/postgresql "42.2.5"]
+                 [hodgepodge "0.1.3"]
                  [datascript "0.18.9"]
                  [potemkin "0.4.5"]
                  [mount "0.1.16"]

@@ -21,6 +21,15 @@ The following options for durable sources are available now.
                          :dbname "test_mamulengo"}})
 ```
 
+## Local Storage (ClojureScript)
+
+```clj
+(def cfg {:durable-storage :local-storage})
+```
+
+Remember that you need to explicitly clear the local-storage
+when you desire to tear-down the database.
+
 ## Opt-out (Clojure(Script))
 
 If you want to opt-out a durable storage you can pass the

@@ -27,6 +27,10 @@
                     {:db/id -3
                      :body/name "Venus"
                      :body/diameter 12100}])
+
+      (m/transact! [{:db/id -4
+                     :body/name "OutSpace"
+                     :body/diameter 9999}])
       (is (=
            ((juxt :body/diameter
                   :body/name) (ffirst (m/query! '[:find (pull ?e [*])

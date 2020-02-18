@@ -11,7 +11,8 @@
        (:require [mamulengo.config :as config]
                  [mount.core :as mount]
                  [datascript.core :as ds]
-                 [mamulengo.durability :as du])]))
+                 [mamulengo.durability :as du]
+                 [mamulengo.durable.local-storage-impl])]))
 
 (declare listen-tx!)
 

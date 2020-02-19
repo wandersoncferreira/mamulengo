@@ -1,18 +1,17 @@
 (ns mamulengo.durable.local-storage-impl
-  #?@(:cljs
-      [(:require [mamulengo.durability :refer [create-system-tables!
-                                               get-system-schema!
-                                               setup-clients-schema!
-                                               retrieve-all-facts!
-                                               get-database!
-                                               store!]]
-                 [mamulengo.specs.system-table :as st]
-                 [hodgepodge.core :refer [local-storage clear!]]
-                 [cljs-time.core :as t]
-                 [cljs-time.coerce :as tc]
-                 [clojure.edn :as edn]
-                 [datascript.core :as ds]
-                 [clojure.spec.alpha :as s])]))
+  (:require [mamulengo.durability :refer [create-system-tables!
+                                          get-system-schema!
+                                          setup-clients-schema!
+                                          retrieve-all-facts!
+                                          get-database!
+                                          store!]]
+            [mamulengo.specs.system-table :as st]
+            [hodgepodge.core :refer [local-storage clear!]]
+            [cljs-time.core :as t]
+            [cljs-time.coerce :as tc]
+            [clojure.edn :as edn]
+            [datascript.core :as ds]
+            [clojure.spec.alpha :as s]))
 
 (defn get-last-id [table]
   (letfn [(last-id [table]

@@ -12,15 +12,17 @@
                  [com.andrewmcveigh/cljs-time "0.5.2"]
                  [seancorfield/next.jdbc "1.0.13"]
                  [com.taoensso/nippy "2.14.0"]]
-
+  :test-paths ["test/clj" "test/cljc"]
   :profiles {:dev {:source-paths ["src" "dev"]
                    :plugins [[refactor-nrepl "2.4.0"]
                              [lein-doo "0.1.11"]
                              [cider/cider-nrepl "0.23.0"]]
+                   :jvm-opts ^:replace ["-server"]
                    :dependencies [[org.clojure/clojurescript "1.10.520"]
                                   [org.clojure/test.check "0.10.0"]
                                   [org.clojure/tools.namespace "0.3.1"]]}}
-  :aliases {"test-phantom" ["doo" "phantom" "test" "once"]}
+  :aliases {"all" ["with-profile" "dev"]
+            "test-phantom" ["doo" "phantom" "test" "once"]}
   :cljsbuild {:builds [{:id "test"
                         :source-paths ["src" "test/cljc" "test/cljs"]
                         :compiler {:output-to "target/out/test.js"

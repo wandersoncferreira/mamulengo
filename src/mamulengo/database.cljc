@@ -5,12 +5,14 @@
                  [mamulengo.durable.pg-impl :refer :all]
                  [mount.core :refer [defstate] :as mount]
                  [datascript.core :as ds]
+                 [datascript.db :as db]
                  [mamulengo.config :as config])]
       :cljs
       [(:require-macros [mount.core :refer [defstate]])
        (:require [mamulengo.config :as config]
                  [mount.core :as mount]
                  [datascript.core :as ds]
+                 [datascript.db :as db]
                  [mamulengo.durability :as du]
                  [mamulengo.durable.local-storage-impl])]))
 
@@ -68,11 +70,21 @@
    (let [tx-seq (if (map? tx) (list tx) tx)]
      (ds/transact! (:conn @ds-state) tx-seq metadata))))
 
+(defn- get-conn [arg]
+  (cond
+    (ds/conn? arg) @arg
+    (db/db? arg) @(ds/conn-from-db arg)
+    :else @(:sync @ds-state)))
+
+(defn- is-inputs? [arg]
+  (if (or (ds/conn? arg) (db/db? arg))
+    false
+    true))
+
 (defn query!
   [query & args]
-  (println "ARGS: args")
-  (let [connection (if (ds/conn? (first args)) @(first args) @(:sync @ds-state))
-        inputs (if (ds/conn? (first args)) (rest args) args)]
+  (let [connection (get-conn (first args))
+        inputs (if (is-inputs? (first args)) args (rest args))]
     (apply ds/q query (cons connection inputs))))
 
 (defn get-database!

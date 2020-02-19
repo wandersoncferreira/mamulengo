@@ -21,6 +21,17 @@ Mamulengo supports [PostgreSQL](https://www.postgresql.org/)
 and [H2](https://www.h2database.com/html/main.html) for
 Clojure and [Local Storage](https://funcool.github.io/hodgepodge/) for ClojureScript.
 
+## Release and Dependency Information
+
+This project follows the version scheme MAJOR.MINOR.COMMITS
+where MAJOR and MINOR provide some relative indication of
+the size of the change, but do not follow semantic
+versioning. In general, all changes endeavor to be
+non-breaking (by moving to new names rather than by breaking
+existing names). COMMITS is an ever-increasing counter of
+commits since the beginning of this repository.
+
+
 ## Installation
 
 *Bleedinng-edge project.. Still wondering about APIs and code organization..*
@@ -28,12 +39,12 @@ Clojure and [Local Storage](https://funcool.github.io/hodgepodge/) for ClojureSc
 Leinigen/Boot
 
 ```clj
-[mamulengo "0.1.6"]
+[mamulengo "0.1.44"]
 ```
 
 Clojure CLI/deps.edn
 ```clj
-mamulengo {:mvn/version "0.1.6"}
+mamulengo {:mvn/version "0.1.44"}
 ```
 
 

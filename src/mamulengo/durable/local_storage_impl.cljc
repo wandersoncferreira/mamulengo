@@ -7,7 +7,7 @@
                                                get-database!
                                                store!]]
                  [mamulengo.specs.system-table :as st]
-                 [hodgepodge.core :refer [local-storage]]
+                 [hodgepodge.core :refer [local-storage clear!]]
                  [cljs-time.core :as t]
                  [cljs-time.coerce :as tc]
                  [clojure.edn :as edn]
@@ -20,6 +20,9 @@
     (if (empty? table)
       0
       (last-id table))))
+
+(defn clear []
+  (clear! local-storage))
 
 (defn read-storage
   "Read the local storage and spec the content to verify if anything anomalous is in there.

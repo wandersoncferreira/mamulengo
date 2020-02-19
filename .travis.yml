@@ -16,3 +16,4 @@ before_script:
 
 script:
   - lein test
+  - lein test-phantom

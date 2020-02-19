@@ -13,6 +13,18 @@
                  [mount.core :as mount])]))
 
 (defn connect!
+  "Connect to mamulengo. If you do not provide any configuration,
+  a default will be used.
+
+  - default config: ClojureScript uses Local Storage and Clojure uses H2 Database.
+
+  :config       Map with specifications to the durable target object.
+  :schema       Same as datascript schema maps."
+  ([]
+   (let [config #?(:clj {:durable-storage :h2
+                         :durable-conf {:dbtype "h2:mem"}}
+                   :cljs {:durable-storage :local-storage})]
+     (connect! config)))
   ([config]
    (connect! config {}))
   ([config schema]

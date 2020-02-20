@@ -98,23 +98,21 @@ can pass an old Database/Connection object to the query function.
 
 ```clj
 
-(def ret (m/transact! {:body/name "Wow"}))  ;; => db-before... db-after..
+(def db-as-of (m/as-of! #inst "2020-02-18T11:46:31.505-00:00"))
 
 ;;; more things happening...
 
 (m/query! '[:find ?name
             :where [?e :body/name ?name]]
-            (:db-before ret))
+            db-as-of)
+
+;;; more things...
+(def db-since (m/since! #inst "2020-02-18T11:46:31.505-00:00"))
+
 
 ```
 
-This will query the `db-before` database. You can also use
-`m/get-database` to capture a specific version of the
-database based on timestamp.
-
-```clj
-(def old-db (m/get-database! #inst "2020-02-18T11:46:31.505-00:00"))
-```
+Please, see the `time-travel-test` namespace to see some working examples.
 
 
 ## Why `mamulengo`?

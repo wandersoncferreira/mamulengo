@@ -1,4 +1,4 @@
-(defproject mamulengo "1.0.47"
+(defproject mamulengo "1.0.54"
   :description "Lightweight embedded database based on datascript for Clojure(Script)"
   :url "https://github.com/wandersoncferreira/mamulengo"
   :license {:name "EPL-2.0 OR GPL-2.0-or-later WITH Classpath-exception-2.0"
@@ -22,7 +22,7 @@
                                   [org.clojure/test.check "0.10.0"]
                                   [org.clojure/tools.namespace "0.3.1"]]}}
   :aliases {"all" ["with-profile" "dev"]
-            "test-phantom" ["doo" "phantom" "test"]}
+            "test-phantom" ["doo" "phantom" "test" "once"]}
   :cljsbuild {:builds [{:id "test"
                         :source-paths ["src" "test/cljc" "test/cljs"]
                         :compiler {:output-to "target/out/test.js"

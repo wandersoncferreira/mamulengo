@@ -1,17 +1,34 @@
-(ns mamulengo.time-travel-test
-  (:require [cljs.test :refer-macros [deftest is testing use-fixtures]]
-            [mamulengo.core :as m]
-            [mamulengo.durable.local-storage-impl :refer [clear] :as impl]))
+(ns mamulengo.time-travel-h2-test
+  #?@(:cljs
+      [(:require [cljs.test :refer-macros [deftest is testing use-fixtures]]
 
-(use-fixtures
-  :each
-  {:before (fn [] (println "Start cljs testing!"))
-   :after (fn []
-            (clear)
-            (m/disconnect!)
-            (println "Clear local storage"))})
+                 [mamulengo.core :as m]
+                 [mamulengo.durable.local-storage-impl :refer [clear]])]
+      :clj
+      [(:require [clojure.test :refer [deftest is testing use-fixtures]]
+                 [mamulengo.durable.h2-impl :refer [clear-h2]]
+                 [mamulengo.core :as m])]))
 
-(def conf {:durable-storage :local-storage})
+(def conf #?(:cljs
+             {:durable-storage :local-storage}
+             :clj {:durable-storage :h2
+                   :durable-conf {:dbtype "h2:mem"
+                                  :dbname "test_mamulengo"}}))
+
+#?(:cljs (use-fixtures
+           :each
+           {:before (fn []
+                      #?(:cljs (clear))
+                      (println "Start cljs testing!"))
+            :after (fn []
+                     #?(:cljs (clear))
+                     (m/disconnect!)
+                     (println "Clear local storage"))})
+   :clj
+   (use-fixtures :each (fn [f]
+                         (f)
+                         (clear-h2 conf)
+                         (m/disconnect!))))
 
 (def schema1 {:maker/name {:db/cardinality :db.cardinality/one
                            :db/unique :db.unique/identity}
@@ -37,6 +54,7 @@
       (is (= 3 (count (m/query! '[:find ?n
                                   :where
                                   [?e :maker/name ?n]])))))
+
     (testing "If I change the name of the BMW, the query should return the new name."
       (m/transact! {:maker/name "Volks" :maker/country "Germany"})
       (m/transact! {:maker/name "BMW" :maker/country "Germany"})
@@ -62,6 +80,7 @@
     (m/transact! {:maker/name "Volks" :maker/country "Argentina"})
 
     (testing "If I change the name of the BMW, the query should return the new name."
+      (is (= 1 1))
 
       (let [timestamp (:timestamp (m/transact! {:maker/name "Brasilia"
                                                 :maker/country "Spain"}))]

@@ -13,12 +13,9 @@
            {:maker/name "Corolla"
             :maker/country "South Korea"}])
 
-; (deftest test-remove-durable-layer
-;   (m/connect! {:durable-layer :off})
-;   (let [db-old (:db-after (m/transact! data))]
-;     (m/transact! {:maker/name "Maverick" :maker/country "USA"})
+#_(deftest test-remove-durable-layer
+    (m/connect! {:durable-layer :off})
+    (let [db-old (:db-after (m/transact! data))]
+      (m/transact! {:maker/name "Maverick" :maker/country "USA"})
 
-;     (println (m/query! '[:find ?n
-;                          :where
-;                          [?e :maker/name ?n]]
-;                        db-old))))
+      (is (= 1 1))))

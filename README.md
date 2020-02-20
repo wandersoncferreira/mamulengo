@@ -2,8 +2,6 @@
 
 <img src="https://github.com/wandersoncferreira/mamulengo/blob/master/doc/mamulengo_fuzue.jpg" width=260 align="right"/>
 
-**LIBRARY UNDER RAPID DEVELOPMENT AND CHANGES!!!**
-
 A lightweight database based on
 [datascript](https://github.com/tonsky/datascript) and a
 pluggable storage for data durability. In fact, `mamulengo`
@@ -41,12 +39,12 @@ commits since the beginning of this repository.
 Leinigen/Boot
 
 ```clj
-[mamulengo "1.0.54"]
+[mamulengo "1.0.57"]
 ```
 
 Clojure CLI/deps.edn
 ```clj
-mamulengo {:mvn/version "1.0.54"}
+mamulengo {:mvn/version "1.0.57"}
 ```
 
 
@@ -93,9 +91,10 @@ mamulengo {:mvn/version "1.0.54"}
 
 ## Time Travel
 
-Right now only the `Local Storage` option has support for
+All the current durable storages has support for
 time-travel. The API behaves similarly with Datomic one, you
-can pass an old Database/Connection object to the query function.
+can pass an old Database/Connection object to the query
+function.
 
 ```clj
 
@@ -113,7 +112,8 @@ can pass an old Database/Connection object to the query function.
 
 ```
 
-Please, see the `time-travel-test` namespace to see some working examples.
+Please, see either `time-travel-{pg,h2}-test` namespaces to
+see some working examples.
 
 
 ## Why `mamulengo`?

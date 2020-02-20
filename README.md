@@ -83,7 +83,7 @@ mamulengo {:mvn/version "1.0.57"}
             :in $ ?n
             :where
             [?e :body/name ?n]]
-            ["Pluto"])
+            "Pluto")
 
 ```
 
@@ -92,7 +92,7 @@ mamulengo {:mvn/version "1.0.57"}
 All the current durable storages has support for
 time-travel. The API behaves similarly with Datomic one, you
 can pass an old Database/Connection object to the query
-function.
+function. 
 
 ```clj
 
@@ -110,6 +110,7 @@ function.
 
 ```
 
+You can only capture a database using a timestamp, an option to use the transaction id might be on the way.
 Please, see either `time-travel-{pg,h2}-test` namespaces to
 see some working examples.
 

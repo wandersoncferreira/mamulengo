@@ -8,6 +8,7 @@
                                           datoms-as-of!
                                           store!]]
             [mamulengo.specs.system-table :as st]
+            [mamulengo.utils :as utils]
             [hodgepodge.core :refer [local-storage clear!]]
             [cljs-time.core :as t]
             [cljs-time.coerce :as tc]
@@ -41,7 +42,8 @@
                       (s/explain-data (get specs table-name) tb))))))
 
 (defmethod create-system-tables! :local-storage
-  [_]
+  [_](defmulti datoms-since! :durable-storage)
+
   (when-not (read-storage :table-tx)
     (assoc! local-storage :table-tx []))
 
@@ -106,50 +108,6 @@
     (or (t/after? date1 date2)
         (t/equal? date1 date2))))
 
-(defn pos-opposite-status
-  [status list-statuses]
-  (let [st-ops (if (true? status) false status)
-        idx (.indexOf list-statuses st-ops)]
-    (when (>= idx 0)
-      idx)))
-
-(defn vec-remove
-  "remove elem in coll"
-  [pos coll]
-  (if pos
-    (vec (concat (subvec coll 0 pos) (subvec coll (inc pos))))
-    coll))
-
-(defn bring-back-consistent-database
-  "There is a problem when some datoms has been added and retracted from different databases across time.
-
-  This function manages to bring back consistency to the loaded database by removing datoms that cancel each other
-  The following example was happening and it should not!:
-
-  (ds/conn-from-datoms [#datascript/Datom [1 :maker/name 'BMW' 536870913 true]
-                        #datascript/Datom [1 :maker/name 'BMW' 536870914 false]])
-  #datascript/DB{:datoms [[1 :maker/name BMW 536870913] [1 :maker/name BMW 536870914]]}
-
-  The correct answer here is none. The datascript/DB should be empty after loading those datoms.
-  "
-  [datoms]
-  (->> datoms
-       (group-by (juxt first second #(nth % 2)))
-       (map (fn [[_ v]]
-              (if (= (count v) 1)
-                v
-                (loop [original v
-                       accepted []]
-                  (if (empty? original)
-                    accepted
-                    (let [status (last (first original))
-                          idx (pos-opposite-status status (map last (rest original)))
-                          new-original (vec-remove idx (vec (rest original)))]
-                      (recur new-original (if (nil? idx) (cons (first original) accepted) accepted))))))))
-       (filter not-empty)
-       (apply concat)
-       (into [])))
-
 (defmethod datoms-as-of! :local-storage
   [{:keys [instant]}]
   (let [table-tx (read-storage :table-tx)
@@ -161,7 +119,7 @@
          (map :datoms)
          (map #(edn/read-string {:readers ds/data-readers} %))
          (apply concat)
-         bring-back-consistent-database)))
+         utils/bring-back-consistent-database)))
 
 (defmethod get-schema-at! :local-storage
   [{:keys [instant]}]
@@ -183,4 +141,4 @@
          (map :datoms)
          (map #(edn/read-string {:readers ds/data-readers} %))
          (apply concat)
-         bring-back-consistent-database)))
+         utils/bring-back-consistent-database)))

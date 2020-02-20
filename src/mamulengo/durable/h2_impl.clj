@@ -3,9 +3,13 @@
             [datascript.core :as ds]
             [mamulengo.durability :refer [create-system-tables!
                                           get-system-schema!
+                                          get-schema-at!
                                           retrieve-all-facts!
                                           setup-clients-schema!
+                                          datoms-as-of!
+                                          datoms-since!
                                           store!]]
+            [mamulengo.utils :as utils]
             [next.jdbc :as jdbc]
             [next.jdbc.sql :as sql]
             [taoensso.nippy :as nippy]))
@@ -35,6 +39,10 @@ nippy binary
 
 (def ^:private sql-get-last-schema
   ["select top 1 nippy from dbschema order by instant desc"])
+
+(defn clear-h2 [{:keys [durable-conf]}]
+  (jdbc/with-transaction [tx (jdbc/get-datasource durable-conf)]
+    (jdbc/execute! tx ["DROP ALL OBJECTS"])))
 
 (defmethod create-system-tables! :h2
   [{:keys [durable-conf]}]
@@ -73,4 +81,44 @@ nippy binary
                                          :meta (if tx-meta (pr-str tx-meta) nil)})
           tx-id (:TX/ID tx-result)]
       (sql/insert! tx :mamulengo {:datoms (pr-str tx-data) :tx tx-id})
-      tx-id)))
+      (:TX/INSTANT tx-result))))
+
+(def ^:private sql-datoms-as-of
+  "select datoms from MAMULENGO as m inner join TX as t on m.tx=t.id
+  where t.instant <= ?")
+
+(def ^:private sql-datoms-since
+  "select datoms from MAMULENGO as m inner join TX as t on m.tx=t.id
+where t.instant >= ?")
+
+(def ^:private sql-schema-at
+  "select nippy from DBSCHEMA where instant <= ?")
+
+(defmethod datoms-as-of! :h2
+  [{:keys [durable-conf instant]}]
+  (jdbc/with-transaction [tx (jdbc/get-datasource durable-conf)]
+    (let [datoms (jdbc/execute! tx [sql-datoms-as-of instant])]
+      (->> datoms
+           (map :MAMULENGO/DATOMS)
+           (mapcat #(edn/read-string {:readers ds/data-readers} %))
+           utils/bring-back-consistent-database))))
+
+(defmethod datoms-since! :h2
+  [{:keys [durable-conf instant]}]
+  (jdbc/with-transaction [tx (jdbc/get-datasource durable-conf)]
+    (let [datoms (jdbc/execute! tx [sql-datoms-since instant])]
+      (->> datoms
+           (map :MAMULENGO/DATOMS)
+           (mapcat #(edn/read-string {:readers ds/data-readers} %))
+           utils/bring-back-consistent-database))))
+
+(defmethod get-schema-at! :h2
+  [{:keys [durable-conf instant]}]
+  (jdbc/with-transaction [tx (jdbc/get-datasource durable-conf)]
+    (let [schema (->> [sql-schema-at instant]
+                      (jdbc/execute! tx)
+                      last
+                      :DBSCHEMA/NIPPY)]
+      (if-not (empty? schema)
+        (nippy/thaw schema)
+        {}))))

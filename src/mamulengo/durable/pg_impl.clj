@@ -1,9 +1,13 @@
 (ns mamulengo.durable.pg-impl
   (:require [mamulengo.durability :refer [create-system-tables!
                                           get-system-schema!
+                                          get-schema-at!
                                           retrieve-all-facts!
                                           setup-clients-schema!
+                                          datoms-as-of!
+                                          datoms-since!
                                           store!]]
+            [mamulengo.utils :as utils]
             [next.jdbc :as jdbc]
             [taoensso.nippy :as nippy]
             [next.jdbc.sql :as sql]
@@ -33,6 +37,14 @@ nippy bytea)"])
 (def ^:private sql-get-last-schema
   ["select nippy from dbschema order by instant desc limit 1"])
 
+(defn clear-pg [{:keys [durable-conf]}]
+  (let [truncate-tx ["truncate table TX cascade;"]
+        truncate-schema ["truncate table DBSCHEMA cascade;"]
+        truncate-mamulengo ["truncate table MAMULENGO cascade;"]]
+    (jdbc/with-transaction [tx (jdbc/get-datasource durable-conf)]
+      (jdbc/execute! tx truncate-tx)
+      (jdbc/execute! tx truncate-mamulengo)
+      (jdbc/execute! tx truncate-schema))))
 
 (defmethod create-system-tables! :postgresql
   [{:keys [durable-conf]}]
@@ -71,4 +83,34 @@ nippy bytea)"])
                                          :meta (if tx-meta (pr-str tx-meta) nil)})
           tx-id (:tx/id tx-result)]
       (sql/insert! tx :mamulengo {:datoms (pr-str tx-data) :tx tx-id})
-      tx-id)))
+      (:tx/instant tx-result))))
+
+(def ^:private sql-datoms-as-of
+  "select datoms from mamulengo as m inner join tx as t on m.tx=t.id
+where t.instant <= ?")
+
+(def ^:private sql-datoms-since
+  "select datoms from mamulengo as m inner join tx as t on m.tx=t.id
+where t.instant >= ?")
+
+(def ^:private sql-schema-at
+  "select nippy from dbschema where instant <= ?")
+
+(defmethod datoms-as-of! :postgresql
+  [{:keys [durable-conf instant]}]
+  (utils/sql-datoms-formatting durable-conf [sql-datoms-as-of instant]))
+
+(defmethod datoms-since! :postgresql
+  [{:keys [durable-conf instant]}]
+  (utils/sql-datoms-formatting durable-conf [sql-datoms-since instant]))
+
+(defmethod get-schema-at! :postgresql
+  [{:keys [durable-conf instant]}]
+  (jdbc/with-transaction [tx (jdbc/get-datasource durable-conf)]
+    (let [schema (->> [sql-schema-at instant]
+                      (jdbc/execute! tx)
+                      last
+                      :dbschema/nippy)]
+      (if-not (empty? schema)
+        (nippy/thaw schema)
+        {}))))

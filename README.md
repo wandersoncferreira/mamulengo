@@ -41,12 +41,12 @@ commits since the beginning of this repository.
 Leinigen/Boot
 
 ```clj
-[mamulengo "1.0.47"]
+[mamulengo "1.0.54"]
 ```
 
 Clojure CLI/deps.edn
 ```clj
-mamulengo {:mvn/version "1.0.47"}
+mamulengo {:mvn/version "1.0.54"}
 ```
 
 
@@ -91,10 +91,29 @@ mamulengo {:mvn/version "1.0.47"}
 
 ```
 
-
 ## Time Travel
 
-TODO!
+Right now only the `Local Storage` option has support for
+time-travel. The API behaves similarly with Datomic one, you
+can pass an old Database/Connection object to the query function.
+
+```clj
+
+(def db-as-of (m/as-of! #inst "2020-02-18T11:46:31.505-00:00"))
+
+;;; more things happening...
+
+(m/query! '[:find ?name
+            :where [?e :body/name ?name]]
+            db-as-of)
+
+;;; more things...
+(def db-since (m/since! #inst "2020-02-18T11:46:31.505-00:00"))
+
+
+```
+
+Please, see the `time-travel-test` namespace to see some working examples.
 
 
 ## Why `mamulengo`?

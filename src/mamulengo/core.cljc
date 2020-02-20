@@ -2,13 +2,13 @@
   #?@(:clj
       [(:require [mamulengo.config]
                  [mamulengo.specs.config :as config]
-                 [mamulengo.database :as database]
+                 [mamulengo.internals :as internals]
                  [mount.core :as mount]
                  [clojure.spec.alpha :as s])]
       :cljs
       [(:require [mamulengo.config]
                  [mamulengo.specs.config :as config]
-                 [mamulengo.database :as database]
+                 [mamulengo.internals :as internals]
                  [clojure.spec.alpha :as s]
                  [mount.core :as mount])]))
 
@@ -36,9 +36,10 @@
 (defn disconnect! []
   (mount/stop))
 
-(def
-  transact! database/transact!)
+(def transact! internals/transact!)
 
-(def query! database/query!)
+(def query! internals/query!)
 
-(def get-database! database/get-database!)
+(def as-of! internals/db-as-of!)
+
+(def since! internals/db-since!)

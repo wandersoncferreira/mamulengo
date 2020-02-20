@@ -8,6 +8,10 @@
 
 (defmulti get-system-schema! :durable-storage)
 
+(defmulti get-schema-at! :durable-storage)
+
 (defmulti store! :durable-storage)
 
-(defmulti get-database! :durable-storage)
+(defmulti datoms-as-of! :durable-storage)
+
+(defmulti datoms-since! :durable-storage)

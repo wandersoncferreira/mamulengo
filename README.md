@@ -34,8 +34,6 @@ commits since the beginning of this repository.
 
 ## Installation
 
-*Bleedinng-edge project.. Still wondering about APIs and code organization..*
-
 Leinigen/Boot
 
 ```clj

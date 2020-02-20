@@ -11,6 +11,6 @@
                                        ::dbtype]))
 
 (s/def ::config
-  (s/keys :req-un [::durable-storage]
+  (s/keys :req-un [(or ::durable-storage ::durable-layer)]
           :opt-un [::durable-layer
                    ::durable-conf]))

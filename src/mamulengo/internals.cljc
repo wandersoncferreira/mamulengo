@@ -1,4 +1,4 @@
-(ns mamulengo.database
+(ns mamulengo.internals
   #?@(:clj
       [(:require [mamulengo.durability :as du]
                  [mamulengo.durable.h2-impl :refer :all]
@@ -31,12 +31,14 @@
       (let [conn (ds/create-conn {})]
         {:conn conn
          :sync (atom @conn)
+         :timestamp-last-tx (atom nil)
          :listener (ds/listen! conn listen-tx!)})
 
       (let [{:keys [facts schema]} (setup-durability-layer conf)
             conn (ds/conn-from-datoms facts schema)]
         {:conn conn
          :sync (atom @conn)
+         :timestamp-last-tx (atom nil)
          :listener (ds/listen! conn listen-tx!)}))))
 
 (defn- stop-datascript
@@ -55,20 +57,23 @@
 
     (when (not= db-after db-before)
       (let [{:keys [durable-conf durable-storage]} @config/mamulengo-cfg
-            stored (du/store! {:durable-storage durable-storage
-                               :durable-conf durable-conf
-                               :tempids (:db/current-tx tempids)
-                               :tx-data tx-data
-                               :tx-meta tx-metada})]
-        (if stored
-          (reset! (:sync @ds-state) db-after)
+            timestamp-stored (du/store! {:durable-storage durable-storage
+                                         :durable-conf durable-conf
+                                         :tempids (:db/current-tx tempids)
+                                         :tx-data tx-data
+                                         :tx-meta tx-metada})]
+        (if timestamp-stored
+          (do
+            (reset! (:timestamp-last-tx @ds-state) timestamp-stored)
+            (reset! (:sync @ds-state) db-after))
           (reset! (:conn @ds-state) db-before))))))
 
 (defn transact!
   ([tx] (transact! tx nil))
   ([tx metadata]
-   (let [tx-seq (if (map? tx) (list tx) tx)]
-     (ds/transact! (:conn @ds-state) tx-seq metadata))))
+   (let [tx-seq (if (map? tx) (list tx) tx)
+         ret-tx (ds/transact! (:conn @ds-state) tx-seq metadata)]
+     (assoc ret-tx :timestamp @(:timestamp-last-tx @ds-state)))))
 
 (defn- get-conn [arg]
   (cond
@@ -87,7 +92,14 @@
         inputs (if (is-inputs? (first args)) args (rest args))]
     (apply ds/q query (cons connection inputs))))
 
-(defn get-database!
+(defn db-as-of!
   [instant]
-  (let [datoms (du/get-database! (assoc @config/mamulengo-cfg :instant instant))]
-    (ds/conn-from-datoms datoms)))
+  (let [datoms (du/datoms-as-of! (assoc @config/mamulengo-cfg :instant instant))
+        schema (du/get-schema-at! (assoc @config/mamulengo-cfg :instant instant))]
+    @(ds/conn-from-datoms datoms schema)))
+
+(defn db-since!
+  [instant]
+  (let [datoms (du/datoms-since! (assoc @config/mamulengo-cfg :instant instant))
+        schema (du/get-system-schema! (assoc @config/mamulengo-cfg :instant instant))]
+    @(ds/conn-from-datoms datoms schema)))

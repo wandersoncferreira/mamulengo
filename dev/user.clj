@@ -1,13 +1,13 @@
 (ns user
   (:require [mount.core :as mount]
             [clojure.tools.namespace.repl :as tn]
-            [mamulengo.database :as database]
+            [mamulengo.internals :as internals]
             [mamulengo.config :as config]))
 
 (defn start [config]
   (mount/in-cljc-mode)
   (-> (mount.core/only #{#'config/mamulengo-cfg
-                         #'database/ds-state
+                         #'internals/ds-state
                          })
       (mount.core/with-args config)
       (mount.core/start)))

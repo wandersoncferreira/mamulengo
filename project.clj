@@ -22,7 +22,7 @@
                                   [org.clojure/test.check "0.10.0"]
                                   [org.clojure/tools.namespace "0.3.1"]]}}
   :aliases {"all" ["with-profile" "dev"]
-            "test-phantom" ["doo" "phantom" "test" "once"]}
+            "test-phantom" ["doo" "phantom" "test"]}
   :cljsbuild {:builds [{:id "test"
                         :source-paths ["src" "test/cljc" "test/cljs"]
                         :compiler {:output-to "target/out/test.js"

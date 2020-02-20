@@ -2,6 +2,8 @@
 
 <img src="https://github.com/wandersoncferreira/mamulengo/blob/master/doc/mamulengo_fuzue.jpg" width=260 align="right"/>
 
+**LIBRARY UNDER RAPID DEVELOPMENT AND CHANGES!!!**
+
 A lightweight database based on
 [datascript](https://github.com/tonsky/datascript) and a
 pluggable storage for data durability. In fact, `mamulengo`
@@ -89,8 +91,7 @@ mamulengo {:mvn/version "1.0.47"}
 
 ```
 
-
-### Time travel
+## Time Travel
 
 Right now only the `Local Storage` option has support for
 time-travel. The API behaves similarly with Datomic one, you

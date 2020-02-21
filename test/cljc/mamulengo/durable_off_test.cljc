@@ -1,10 +1,12 @@
 (ns mamulengo.durable-off-test
   #?@(:cljs
-      [(:require-macros [cljs.test :refer [deftest is]])
-       (:require [mamulengo.core :as m])]
+      [(:require-macros [cljs.test :refer [deftest is testing]])
+       (:require [mamulengo.core :as m]
+                 [mount.core :as mount])]
       :clj
-      [(:require [clojure.test :refer [deftest is]]
-                 [mamulengo.core :as m])]))
+      [(:require [clojure.test :refer [deftest is testing]]
+                 [mamulengo.core :as m]
+                 [mount.core :as mount])]))
 
 (def data [{:maker/name "BMW"
             :maker/country "Germany"}
@@ -13,9 +15,15 @@
            {:maker/name "Corolla"
             :maker/country "South Korea"}])
 
-#_(deftest test-remove-durable-layer
-    (m/connect! {:durable-layer :off})
-    (let [db-old (:db-after (m/transact! data))]
-      (m/transact! {:maker/name "Maverick" :maker/country "USA"})
+(deftest test-remove-durable-layer
+  (m/connect! {:durable-layer :off}))
 
-      (is (= 1 1))))
+(deftest test-use-default-setup
+  (testing "The cljs should choose the local-storage"
+    #?@(:cljs
+        [(m/connect!)
+         (is (= :local-storage (:durable-storage (mount/args))))]
+        :clj
+        [(m/connect!)
+         (is (= :h2 (:durable-storage (mount/args))))])
+    (m/disconnect!)))

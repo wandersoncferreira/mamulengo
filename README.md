@@ -9,13 +9,16 @@ has probably poor performance when compared to other
 solutions and its purpose is small-sized applications that
 need an embedded database to get its business moving.
 
-
 We use [datascript](https://github.com/tonsky/datascript) as
 the main database, but write every transaction to a durable
 storage. Therefore, because of this simple addition we are
 able to provide two features to improve datascript and
 enable it to be a full-fledged immutable database:
 i)durability and ii) time-travel feature as in Datomic.
+
+Datomic doesn't fit for small projects so well, therefore
+many projects who could benefit from it, can't. This library
+aims to provide a feel for Datalog/Datomic to newcomers.
 
 Mamulengo supports [PostgreSQL](https://www.postgresql.org/)
 and [H2](https://www.h2database.com/html/main.html) for

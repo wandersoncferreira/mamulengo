@@ -22,7 +22,8 @@
   :schema       Same as datascript schema maps."
   ([]
    (let [config #?(:clj {:durable-storage :h2
-                         :durable-conf {:dbtype "h2:mem"}}
+                         :durable-conf {:dbtype "h2:mem"
+                                        :dbname "mamulengo"}}
                    :cljs {:durable-storage :local-storage})]
      (connect! config)))
   ([config]

@@ -14,7 +14,7 @@ the main database, but write every transaction to a durable
 storage. Therefore, because of this simple addition we are
 able to provide two features to improve datascript and
 enable it to be a full-fledged immutable database:
-i)durability and ii) time-travel feature as in Datomic.
+i) durability and ii) time-travel feature as in Datomic.
 
 Datomic doesn't fit for small projects so well, therefore
 many projects who could benefit from it, can't. This library
@@ -145,6 +145,19 @@ However, we still want the advantages of Datascript and
 Immutable data sources.
 
 The very initial code was inspired in  https://gitlab.com/kurtosys/lib/factoidic.
+
+
+## Alternatives
+
+I just discover the project called
+[datahike](https://github.com/replikativ/datahike) which is
+a lot more sophisticated than mamulengo. I never used this
+project so I will not provide any comparison between both,
+but `mamulengo` has the apparent advantage of leveraging
+existing technologies and easier architecture to understand
+how the whole system works.
+
+Feel free to try both!!
 
 
 ## License

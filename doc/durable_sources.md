@@ -2,6 +2,12 @@
 
 The following options for durable sources are available now.
 
+## Default
+
+If no configuration map is provided to the `connect!`
+function, mamulengo will choose for you: i) H2 for Clojure
+and ii) Local Storage for ClojureScript.
+
 ## PostgreSQL (Clojure)
 
 ```clj

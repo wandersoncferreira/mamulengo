@@ -7,10 +7,11 @@
 
 (use-fixtures
   :each
-  {:before (fn [] (println "Start cljs testing!"))
+  {:before (fn []
+             (clear)
+             (println "Start cljs testing!"))
    :after (fn []
             (clear)
-            (m/disconnect!)
             (println "Clear local storage"))})
 
 (def conf {:durable-storage :local-storage})
@@ -35,7 +36,8 @@
 (deftest test-verify-correct-connection
   (testing "When no config is provided in cljs should be used Local Storage as default durable storage."
     (m/connect!)
-    (is (= :local-storage (:durable-storage (mount/args))))))
+    (is (= :local-storage (:durable-storage (mount/args))))
+    (m/disconnect!)))
 
 (deftest test-transactions
   (m/connect!)
@@ -57,7 +59,8 @@
                                      [?e :maker/name ?name]
                                      [?e :maker/country ?c]]
                                    "Honda Civic")
-                         ffirst))))))
+                         ffirst)))))
+  (m/disconnect!))
 
 (deftest test-schema-changes
   (testing "inserting a single schema into the database."
@@ -67,20 +70,19 @@
       (is (= schema1 schema))))
 
   (testing "reconnecting and capture the last schema saved."
-    (m/connect! conf schema1)
     (m/disconnect!)
     (m/connect! conf schema1)
     (let [schema (du/get-system-schema! conf)]
       (is (= schema1 schema))))
 
   (testing "saving different versions of schema."
-    (m/connect! conf schema1)
     (m/disconnect!)
     (m/connect! conf schema2)
     (is (= schema2 (du/get-system-schema! conf)))
     (m/disconnect!)
     (m/connect! conf schema3)
-    (is (= schema3 (du/get-system-schema! conf)))))
+    (is (= schema3 (du/get-system-schema! conf))))
+  (m/disconnect!))
 
 
 (deftest test-whole-table-schema
@@ -97,7 +99,8 @@
     (m/disconnect!))
   (testing "adding more schema should be fine."
     (m/connect! conf schema3)
-    (is (= 3 (count (impl/read-storage :table-schema))))))
+    (is (= 3 (count (impl/read-storage :table-schema)))))
+  (m/disconnect!))
 
 
 (deftest test-time-travel
@@ -116,4 +119,5 @@
                               [?e :maker/name ?n]]
                             db-old)]
           (is (= 3 (count ret)))
-          (is (not (contains? ret ["Maverick"]))))))))
+          (is (not (contains? ret ["Maverick"]))))))
+    (m/disconnect!)))

@@ -11,14 +11,21 @@
 
 (def conf #?(:cljs
              {:durable-storage :local-storage}
-             :clj {:durable-storage :h2
-                   :durable-conf {:dbtype "h2:mem"
-                                  :dbname "test_mamulengo"}}))
+             :clj
+             {:durable-storage :h2
+              :durable-conf {:dbtype "h2:mem"
+                             :dbname "test_mamulengo"}}))
+
+(def schema1 {:maker/name {:db/cardinality :db.cardinality/one
+                           :db/unique :db.unique/identity}
+              :maker/country {:db/cardinality :db.cardinality/one
+                              :db/unique :db.unique/identity}})
 
 #?(:cljs (use-fixtures
            :each
            {:before (fn []
                       #?(:cljs (clear))
+                      (m/connect! conf schema1)
                       (println "Start cljs testing!"))
             :after (fn []
                      #?(:cljs (clear))
@@ -26,14 +33,11 @@
                      (println "Clear local storage"))})
    :clj
    (use-fixtures :each (fn [f]
+                         (m/connect! conf schema1)
                          (f)
                          (clear-h2 conf)
                          (m/disconnect!))))
 
-(def schema1 {:maker/name {:db/cardinality :db.cardinality/one
-                           :db/unique :db.unique/identity}
-              :maker/country {:db/cardinality :db.cardinality/one
-                              :db/unique :db.unique/identity}})
 
 (def data [{:db/id -1
             :maker/name "BMW"
@@ -47,7 +51,6 @@
 
 (deftest test-time-travel-as-of
   (testing "I should query a different database if I pass it to the query fn"
-    (m/connect! conf schema1)
     (m/transact! data)
 
     (testing "with the current database, it should have 3 names in there."
@@ -75,7 +78,6 @@
 
 (deftest test-time-travel-since
   (testing "I should query a different database if I pass it to the query fn"
-    (m/connect! conf schema1)
     (m/transact! data)
     (m/transact! {:maker/name "Volks" :maker/country "Argentina"})
 

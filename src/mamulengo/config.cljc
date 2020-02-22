@@ -7,4 +7,4 @@
 
 (defstate mamulengo-cfg
   :start (mount/args)
-  :stop #(into {}))
+  :stop (mount/with-args {}))

@@ -42,8 +42,7 @@
                       (s/explain-data (get specs table-name) tb))))))
 
 (defmethod create-system-tables! :local-storage
-  [_](defmulti datoms-since! :durable-storage)
-
+  [_]
   (when-not (read-storage :table-tx)
     (assoc! local-storage :table-tx []))
 

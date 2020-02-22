@@ -1,6 +1,17 @@
 (ns mamulengo.pg-impl-test
-  (:require  [clojure.test :refer [deftest is testing]]
+  (:require  [clojure.test :refer [deftest is testing use-fixtures]]
+             [mamulengo.durable.pg-impl :refer [clear-pg]]
              [mamulengo.core :as m]))
+
+(use-fixtures :each (fn [f]
+                      (f)
+                      (clear-pg {:durable-storage :postgresql
+                                 :durable-conf {:dbtype "postgresql"
+                                                :dbname "mamulengo"
+                                                :password "test"
+                                                :port 54329
+                                                :user "test"}})
+                      (m/disconnect!)))
 
 (def schema-planets
   {:body/name {:db/cardinality :db.cardinality/one
@@ -36,5 +47,4 @@
                                                   :in $
                                                   :where
                                                   [?e :body/name "Pluto"]])))
-           [80 "Pluto"]))
-      (m/disconnect!))))
+           [80 "Pluto"])))))

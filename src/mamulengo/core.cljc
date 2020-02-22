@@ -1,16 +1,18 @@
 (ns mamulengo.core
   #?@(:clj
-      [(:require [mamulengo.config]
-                 [mamulengo.specs.config :as config]
+      [(:require [mamulengo.config :as config]
+                 [mamulengo.specs.config :as specs-config]
                  [mamulengo.internals :as internals]
                  [mount.core :as mount]
                  [clojure.spec.alpha :as s])]
       :cljs
-      [(:require [mamulengo.config]
-                 [mamulengo.specs.config :as config]
+      [(:require [mamulengo.config :as config]
+                 [mamulengo.specs.config :as specs-config]
                  [mamulengo.internals :as internals]
                  [clojure.spec.alpha :as s]
                  [mount.core :as mount])]))
+
+(mount/in-cljc-mode)
 
 (defn connect!
   "Connect to mamulengo. If you do not provide any configuration,
@@ -29,9 +31,10 @@
   ([config]
    (connect! config {}))
   ([config schema]
-   {:pre [(s/valid? ::config/config config)]}
-   (mount/in-cljc-mode)
-   (-> (mount/with-args (assoc config :durable-schema schema))
+   {:pre [(s/valid? ::specs-config/config config)]}
+   (-> #{#'config/mamulengo-cfg #'internals/ds-state}
+       (mount/only)
+       (mount/with-args (assoc config :durable-schema schema))
        (mount/start))))
 
 (defn disconnect! []

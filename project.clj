@@ -13,7 +13,7 @@
                  [seancorfield/next.jdbc "1.0.13"]
                  [com.taoensso/nippy "2.14.0"]]
   :test-paths ["test/clj" "test/cljc"]
-  :profiles {:dev {:source-paths ["src" "dev"]
+  :profiles {:dev {:source-paths ["src"]
                    :plugins [[refactor-nrepl "2.4.0"]
                              [lein-doo "0.1.11"]
                              [cider/cider-nrepl "0.23.0"]]
@@ -29,5 +29,4 @@
                                    :output-dir "target/out"
                                    :main mamulengo.doo-runner
                                    :optimizations :none
-                                   :process-shim false}}]}
-  :repl-options {:init-ns user})
+                                   :process-shim false}}]})

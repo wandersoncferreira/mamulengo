@@ -2,7 +2,27 @@
   #?@(:clj
       [(:require [datascript.core :as ds]
                  [next.jdbc :as jdbc]
-                 [clojure.edn :as edn])]))
+                 [clojure.edn :as edn]
+                 [mount.core :as mount]
+                 [mamulengo.config :as config])]
+      :cljs
+      [(:require [mamulengo.config :as config]
+                 [mount.core :as mount])]))
+
+(defn check-state! []
+  (when (empty? @config/mamulengo-cfg)
+    (throw (ex-info "Mamulengo is disconnected" {:cause :disconnected}))))
+
+(defmacro try-return
+  "Executes body and returns exception as value"
+  [& body]
+  `(try
+     ~@body
+     (catch ~(if (:ns &env) 'js/Error 'Exception) e#
+       (mount/stop)
+       (if (= :disconnected (:cause (ex-data e#)))
+         (ex-message e#)
+         e#))))
 
 (defn bring-back-consistent-database
   "There is a problem when some datoms has been added and retracted from different databases across time.

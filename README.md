@@ -43,12 +43,12 @@ commits since the beginning of this repository.
 Leinigen/Boot
 
 ```clj
-[mamulengo "1.0.69"]
+[mamulengo "1.0.72"]
 ```
 
 Clojure CLI/deps.edn
 ```clj
-mamulengo {:mvn/version "1.0.69"}
+mamulengo {:mvn/version "1.0.72"}
 ```
 
 

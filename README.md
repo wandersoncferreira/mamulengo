@@ -9,12 +9,15 @@ has probably poor performance when compared to other
 solutions and its purpose is small-sized applications that
 need an embedded database to get its business moving.
 
+If you are also interesting to learn more about its
+internals, it has a very simple architecture and can be
+really useful to study purpose.
+
 We use [datascript](https://github.com/tonsky/datascript) as
 the main database, but write every transaction to a durable
 storage. Therefore, because of this simple addition we are
-able to provide two features to improve datascript and
-enable it to be a full-fledged immutable database:
-i) durability and ii) time-travel feature as in Datomic.
+able to provide i) durability and ii) time-travel feature as
+in Datomic.
 
 Datomic doesn't fit for small projects so well, therefore
 many projects who could benefit from it, can't. This library
@@ -22,7 +25,7 @@ aims to provide a feel for Datalog/Datomic to newcomers.
 
 Mamulengo supports [PostgreSQL](https://www.postgresql.org/)
 and [H2](https://www.h2database.com/html/main.html) for
-Clojure and [Local Storage](https://funcool.github.io/hodgepodge/) for ClojureScript.
+Clojure and [Local Storage](https://funcool.github.io/hodgepodge/) for ClojureScript as durable storages.
 
 ## Release and Dependency Information
 
@@ -111,6 +114,10 @@ function.
 (def db-since (m/since! #inst "2020-02-18T11:46:31.505-00:00"))
 
 
+;;; you can also use the history database to query data across all time.
+(def db-history (m/history!))
+
+
 ```
 
 You can only capture a database using a timestamp, an option to use the transaction id might be on the way.
@@ -118,7 +125,28 @@ Please, see either `time-travel-{pg,h2}-test` namespaces to
 see some working examples.
 
 
-## Why `mamulengo`?
+## Why the project `mamulengo`?
+
+I just discover the project called
+[datahike](https://github.com/replikativ/datahike) which is
+a lot more sophisticated and complete than mamulengo.
+
+Apart from the hitchhiker-tree algorithm used in the
+project, both of them has very similar goals and ways to
+extend for different durable storages.
+
+`mamulengo` has the apparent advantage of easier
+architecture to understand how the whole system works if you
+are interested in its internals. However, `mamulengo` has no
+intention to become more robust to handle large
+applications, it will remain as an alternative to newcomers
+to use in their small personal projects and to learn
+datalog.
+
+Feel free to try both!!
+
+
+## Why the name `mamulengo`?
 
 In Brazilian culture we have a very famous event in the
 northeast region called
@@ -136,28 +164,16 @@ introduced to the audience.
 
 ## Ideas
 
-The idea came from **Rodolfo Ferreira** about rethinking some
-concepts on databases and reaching the conclusion that not all applications need an
-insane amount of write/reads per second. Sometimes we only
-need a SQLite to do our work and go home happily.
+The idea came from **Rodolfo Ferreira** about rethinking
+some concepts on databases and reaching the conclusion that
+not all applications need an insane amount of write/reads
+per second. Sometimes we only need a SQLite to do our work
+and go home happily.
 
 However, we still want the advantages of Datascript and
 Immutable data sources.
 
 The very initial code was inspired in  https://gitlab.com/kurtosys/lib/factoidic.
-
-
-## Alternatives
-
-I just discover the project called
-[datahike](https://github.com/replikativ/datahike) which is
-a lot more sophisticated than mamulengo. I never used this
-project so I will not provide any comparison between both,
-but `mamulengo` has the apparent advantage of leveraging
-existing technologies and easier architecture to understand
-how the whole system works.
-
-Feel free to try both!!
 
 
 ## License

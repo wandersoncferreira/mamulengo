@@ -83,8 +83,6 @@
     (m/transact! {:maker/name "Volks" :maker/country "Argentina"})
 
     (testing "If I change the name of the BMW, the query should return the new name."
-      (is (= 1 1))
-
       (let [timestamp (:timestamp (m/transact! {:maker/name "Brasilia"
                                                 :maker/country "Spain"}))]
 
@@ -97,3 +95,15 @@
                              [?e :maker/name ?n]]
                            since-db))
               #{["Brasilia"] ["Golf"] ["Jeep"]}))))))
+
+(deftest test-time-travel-history
+  (testing "Querying all the datoms across time."
+    (m/transact! data)
+    (m/transact! {:maker/name "Volks" :maker/country "Germany"})
+    (is (= (m/query! '[:find ?name ?g
+                       :in $ ?g
+                       :where
+                       [?e :maker/country ?g]
+                       [?e :maker/name ?name]]
+                     (m/history!) "Germany")
+           #{["BMW" "Germany"] ["Volks" "Germany"]}))))

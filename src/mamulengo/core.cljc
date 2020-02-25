@@ -47,3 +47,5 @@
 (def as-of! internals/db-as-of!)
 
 (def since! internals/db-since!)
+
+(def history! internals/db-history)

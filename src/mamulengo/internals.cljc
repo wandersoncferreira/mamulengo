@@ -24,7 +24,7 @@
 (defn- setup-durability-layer [conf]
   (du/create-system-tables! conf)
   (du/setup-clients-schema! conf)
-  {:facts (du/retrieve-all-facts! conf)
+  {:facts (utils/bring-back-consistent-database (du/retrieve-all-facts! conf))
    :schema (du/get-system-schema! conf)})
 
 (defn- start-datascript []
@@ -124,4 +124,16 @@
 
    (let [datoms (du/datoms-since! (assoc @config/mamulengo-cfg :instant instant))
          schema (du/get-system-schema! (assoc @config/mamulengo-cfg :instant instant))]
+     @(ds/conn-from-datoms datoms schema))))
+
+
+(defn db-history
+  []
+  (try-return
+
+   ;; verify if mamulengo is connected
+   (utils/check-state!)
+
+   (let [datoms (du/retrieve-all-facts! @config/mamulengo-cfg)
+         schema (du/get-system-schema! @config/mamulengo-cfg)]
      @(ds/conn-from-datoms datoms schema))))

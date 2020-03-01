@@ -19,9 +19,10 @@
   `(try
      ~@body
      (catch ~(if (:ns &env) 'js/Error 'Exception) e#
-       (mount/stop)
        (if (= :disconnected (:cause (ex-data e#)))
-         (ex-message e#)
+         (do
+           (mount/stop)
+           (ex-message e#))
          e#))))
 
 (defn bring-back-consistent-database
